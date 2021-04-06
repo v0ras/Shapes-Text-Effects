@@ -1,0 +1,157 @@
+* {
+  font-family: monospace;
+  box-sizing: border-box;
+}
+#container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+  height: max-content;
+  padding-top: 10px;
+
+}
+.if {
+  cursor: help;
+  font-size: 1.7rem;
+}
+
+#parametrai {
+  top: 1rem;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 1rem 1rem 1rem;
+  box-shadow: rgba(0, 0, 0, 0.26) 2px 2px 2px 2px;
+  cursor: move;
+}
+#parametrai :hover {
+  background-color: rgba(253, 253, 253, 0.404);
+  opacity: 1.3;
+  animation-name: scale;
+  animation-duration: 0.5s;
+  animation-iteration-count: unset;
+  animation-timing-function: linear;
+}
+@keyframes scale {
+  0% {
+    transform: scale(1);
+  }
+  10% {
+    transform: scale(0.99);
+  }
+  25% {
+    transform: scale(0.98);
+  }
+  50% {
+    transform: scale(0.97);
+  }
+  75% {
+    transform: scale(0.96);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+input,
+textarea {
+  width: 13rem;
+  font-size: 1.2rem;
+}
+
+#tvirtinti {
+  cursor: pointer;
+}
+#containerBg {
+  cursor: pointer;
+}
+
+.figura {
+  display: table;
+  cursor: crosshair;
+  text-align: center;
+  translate: 0rem 0rem;
+  
+}
+.hoverFigura {
+  -ms-transform: rotateX(360deg);
+  -webkit-transform: rotate(360deg);
+  transform: rotate(360deg);
+  -ms-transition: 8s all;
+  -webkit-transition: 8s all;
+  transition: 8s all;
+}
+
+.reverseFigura {
+  -ms-transform: rotate(0deg);
+  -webkit-transform: rotate(0deg);
+  transform: rotate(0deg);
+  -ms-transition: 8s all;
+  -webkit-transition: 8s all;
+  transition: 8s all;
+}
+
+p {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.hover {
+  -ms-transform: rotateX(180deg);
+  -webkit-transform: rotate(180deg);
+  transform: rotate(180deg);
+  -ms-transition: 1s all;
+  -webkit-transition: 1s all;
+  transition: 1s all;
+}
+
+.reverse {
+  -ms-transform: rotate(180deg);
+  -webkit-transform: rotate(180deg);
+  transform: rotate(0deg);
+  -ms-transition: 3s all;
+  -webkit-transition: 3s all;
+  transition: 3s all;
+}
+
+#remove {
+  opacity: 1.5;
+  border-radius: 100%;
+  display: table;
+  text-align: center;
+  margin: 15px 0px 0px 0px;
+  background-color: rgba(0, 0, 0, 0.356);
+  width: 8.5rem;
+  height: 8.5rem;
+  cursor: none;
+}
+#atvaizdavimas {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  height: fit-content;
+}
+.tekstas {
+  display: table-cell;
+  vertical-align: middle;
+  margin: 0 auto;
+  padding: 0 auto;
+}
+#helpWindow {
+  position: absolute;
+  left: 13rem;
+  bottom: 2rem;
+  height: fit-content;
+  font-size: 1.2rem;
+  padding: 1rem 1rem 1rem 1rem;
+  background-color: rgba(0, 0, 0, 0.205);
+  cursor: move;
+  box-shadow: rgba(0, 0, 0, 0.26) 2px 2px 2px 2px;
+  margin: 2rem;
+  display: none;
+  z-index: 2;
+}

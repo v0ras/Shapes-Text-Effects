@@ -1,0 +1,14 @@
+$backroundcolor1 : red;
+$backroundcolor2 : yellow;
+$side :250px;
+
+html {
+    background-color : $backroundcolor1;
+}
+div {
+    height: $side;
+    width: $side;
+    background-color :$backroundcolor2 ;
+    margin:auto;
+    margin-top: 25%;
+}
