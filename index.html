@@ -1,1 +1,66 @@
 
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Formos ir tekstai | Šiuolaikinis kūrybos įrankis</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="pagrindinis">
+  <!-- Kairysis skydelis: parametrai -->
+  <div id="parametruSkydelis" class="parametrai">
+    <div class="if">if (has != enough) {<br>return imagination<br>}</div>
+
+    <input type="number" id="plotis" placeholder="📐 Plotis px" min="0">
+    <input type="number" id="aukstis" placeholder="📏 Aukštis px" min="0">
+    <input type="color" id="fonasSpalva">
+    <input type="number" id="remelisStoris" placeholder="🖼️ Rėmelis px" min="0">
+    <input type="color" id="remelioSpalva">
+    <input type="number" id="apvalinimas" placeholder="🎲 Kampo apvalinimas %" min="0" max="50">
+
+    <textarea id="tekstoLaukas" placeholder="✍️ Rašyk čia..."></textarea>
+    <input type="number" id="sriftoDydis" placeholder="🔠 Šrifto dydis px" min="0" max="333">
+    <input type="color" id="tekstoSpalva">
+
+    <button id="tvirtinti">✨ Sukurti elementą</button>
+
+    <input type="color" id="fonoSpalva">
+    <div id="containerBg">🎨 Keisti foną</div>
+
+    <div id="istrintiZona" class="istrintiZona">
+      <p>🗑️<br>Tempk<br>čia<br>🔻</p>
+    </div>
+
+    <label class="checkboxLaukas">
+      <input type="checkbox" id="needHelp"> 💡 Reikia pagalbos?
+    </label>
+
+    <div class="kiekis"> } <span id="elementuKiekis">0</span></div>
+  </div>
+
+  <!-- Pagalbos langas -->
+  <div id="pagalba" class="pagalba">
+    <h3>✨ Kūrybos pagalbininkas</h3>
+    <p>✅ Užpildyk pločio/aukščio skaičius – sukursi formą.<br>
+    ✅ Jei nori teksto – rašyk, nustatyk šrifto dydį ir spalvą.<br>
+    ✅ Gali kurti ir formą, ir tekstą vienu metu!<br>
+    🖱️ <strong>Dvigubas spustelėjimas</strong> ant elemento – sukimas pelės ratuku.<br>
+    🧲 <strong>Tempk elementą</strong> ant šiukšliadėžės – ištrinsi.<br>
+    🎨 Mygtukas „Keisti foną“ keičia darbo zonos spalvą.<br>
+    🔄 Sukimas vyksta sklandžiai (modernus `transform`).<br>
+    🧠 Skaičiuojami visi sukurti elementai.<br>
+    💡 Sėkmingo kūrybinio chaoso!<br>
+    <span class="if">Norėtum sužinoti daugiau?</span>
+    </p>
+  </div>
+
+  <!-- Zona, kurioje atsiranda kuriami elementai -->
+  <div id="atvaizdavimas" class="atvaizdavimas"></div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
