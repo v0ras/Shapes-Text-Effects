@@ -1,66 +1,137 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="lt">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Formos ir tekstai | Šiuolaikinis kūrybos įrankis</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Formos ir tekstai | Kūrybos įrankis</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="app">
+      <!-- Šoninis skydelis -->
+      <aside class="sidebar">
+        <div class="if">
+          if (has != enough) {<br />return imagination<br />}
+        </div>
 
-<div id="pagrindinis">
-  <!-- Kairysis skydelis: parametrai -->
-  <div id="parametruSkydelis" class="parametrai">
-    <div class="if">if (has != enough) {<br>return imagination<br>}</div>
+        <div class="input-group">
+          <label>📐 Plotis (px)</label>
+          <input type="number" id="width" placeholder="0" value="0" />
+          <div class="error-message" id="widthError"></div>
+        </div>
 
-    <input type="number" id="plotis" placeholder="📐 Plotis px" min="0">
-    <input type="number" id="aukstis" placeholder="📏 Aukštis px" min="0">
-    <input type="color" id="fonasSpalva">
-    <input type="number" id="remelisStoris" placeholder="🖼️ Rėmelis px" min="0">
-    <input type="color" id="remelioSpalva">
-    <input type="number" id="apvalinimas" placeholder="🎲 Kampo apvalinimas %" min="0" max="50">
+        <div class="input-group">
+          <label>📏 Aukštis (px)</label>
+          <input type="number" id="height" placeholder="0" value="0" />
+          <div class="error-message" id="heightError"></div>
+        </div>
 
-    <textarea id="tekstoLaukas" placeholder="✍️ Rašyk čia..."></textarea>
-    <input type="number" id="sriftoDydis" placeholder="🔠 Šrifto dydis px" min="0" max="333">
-    <input type="color" id="tekstoSpalva">
+        <div class="input-group">
+          <label class="color-label" data-color="bg">🎨 Fono spalva</label>
+          <input
+            type="color"
+            id="bgColor"
+            value="#ffcc00"
+            style="display: none"
+          />
+        </div>
 
-    <button id="tvirtinti">✨ Sukurti elementą</button>
+        <div class="input-group">
+          <label>🖼️ Rėmelio storis (px)</label>
+          <input type="number" id="borderWidth" value="0" />
+        </div>
 
-    <input type="color" id="fonoSpalva">
-    <div id="containerBg">🎨 Keisti foną</div>
+        <div class="input-group">
+          <label class="color-label" data-color="border"
+            >🎨 Rėmelio spalva</label
+          >
+          <input
+            type="color"
+            id="borderColor"
+            value="#000000"
+            style="display: none"
+          />
+        </div>
 
-    <div id="istrintiZona" class="istrintiZona">
-      <p>🗑️<br>Tempk<br>čia<br>🔻</p>
+        <div class="input-group">
+          <label>🔘 Kampų apvalinimas (%)</label>
+          <input type="number" id="borderRadius" value="0" />
+        </div>
+
+        <div class="input-group">
+          <label>✍️ Tekstas</label>
+          <textarea id="text" rows="2" placeholder="Rašyk čia..."></textarea>
+        </div>
+
+        <div class="input-group">
+          <label>🔠 Šrifto dydis (px)</label>
+          <input type="number" id="fontSize" value="16" />
+        </div>
+
+        <div class="input-group">
+          <label class="color-label" data-color="text">🎨 Teksto spalva</label>
+          <input
+            type="color"
+            id="textColor"
+            value="#000000"
+            style="display: none"
+          />
+        </div>
+
+        <div class="input-group">
+          <label>🖋️ Šriftas</label>
+          <select id="fontFamily">
+            <option value="Arial">Arial</option>
+            <option value="Times New Roman">Times New Roman</option>
+            <option value="Courier New">Courier New</option>
+            <option value="Georgia">Georgia</option>
+            <option value="Verdana">Verdana</option>
+          </select>
+          <div class="font-preview">Aa</div>
+        </div>
+
+        <div class="input-group">
+          <label class="color-label" data-color="canvas"
+            >🖌️ Darbalaukio spalva</label
+          >
+          <input
+            type="color"
+            id="canvasColor"
+            value="#ece8e0"
+            style="display: none"
+          />
+        </div>
+
+        <button id="createBtn" class="btn-primary">✨ Sukurti</button>
+        <button id="clearAllBtn" class="btn-secondary">
+          🗑️ Išvalyti viską
+        </button>
+        <button id="saveBtn" class="btn-secondary">💾 Išsaugoti</button>
+        <button id="loadBtn" class="btn-secondary">📂 Įkelti</button>
+
+        <div class="counter">Elementai: <span id="elementCount">0</span></div>
+      </aside>
+
+      <!-- Darbalaukis + šiukšliadėžė apačioje -->
+      <div class="canvas-wrapper">
+        <main class="canvas" id="canvas">
+          <div class="trash-bottom" id="trashZone">
+            🗑️ TEMPK ELEMENTUS ČIA IŠTRINTI 🗑️
+          </div>
+        </main>
+      </div>
     </div>
 
-    <label class="checkboxLaukas">
-      <input type="checkbox" id="needHelp"> 💡 Reikia pagalbos?
-    </label>
+    <div id="modal" class="modal" style="display: none">
+      <div class="modal-content">
+        <p id="modalMessage"></p>
+        <div class="modal-buttons">
+          <button id="modalConfirm">Tęsti</button>
+          <button id="modalCancel">Atšaukti</button>
+        </div>
+      </div>
+    </div>
 
-    <div class="kiekis"> } <span id="elementuKiekis">0</span></div>
-  </div>
-
-  <!-- Pagalbos langas -->
-  <div id="pagalba" class="pagalba">
-    <h3>✨ Kūrybos pagalbininkas</h3>
-    <p>✅ Užpildyk pločio/aukščio skaičius – sukursi formą.<br>
-    ✅ Jei nori teksto – rašyk, nustatyk šrifto dydį ir spalvą.<br>
-    ✅ Gali kurti ir formą, ir tekstą vienu metu!<br>
-    🖱️ <strong>Dvigubas spustelėjimas</strong> ant elemento – sukimas pelės ratuku.<br>
-    🧲 <strong>Tempk elementą</strong> ant šiukšliadėžės – ištrinsi.<br>
-    🎨 Mygtukas „Keisti foną“ keičia darbo zonos spalvą.<br>
-    🔄 Sukimas vyksta sklandžiai (modernus `transform`).<br>
-    🧠 Skaičiuojami visi sukurti elementai.<br>
-    💡 Sėkmingo kūrybinio chaoso!<br>
-    <span class="if">Norėtum sužinoti daugiau?</span>
-    </p>
-  </div>
-
-  <!-- Zona, kurioje atsiranda kuriami elementai -->
-  <div id="atvaizdavimas" class="atvaizdavimas"></div>
-</div>
-
-<script src="script.js"></script>
-</body>
+    <script src="script.js"></script>
+  </body>
 </html>
