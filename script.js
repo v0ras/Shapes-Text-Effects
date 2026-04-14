@@ -93,7 +93,13 @@
     if (height > 0) div.style.height = height + "px";
     div.style.backgroundColor = bgColorInput.value;
     div.style.border = `${borderWidthInput.value}px solid ${borderColorInput.value}`;
-    div.style.borderRadius = borderRadiusInput.value + "%";
+
+    // PATAISYMAS: apvalinimas ne daugiau 50%
+    let radius = parseInt(borderRadiusInput.value);
+    if (radius > 50) radius = 50;
+    if (radius < 0) radius = 0;
+    div.style.borderRadius = radius + "%";
+
     div.style.color = textColorInput.value;
     div.style.fontSize = fontSizeInput.value + "px";
     div.style.fontFamily = fontFamilySelect.value;
@@ -166,13 +172,12 @@
         el.style.left = newLeft + "px";
         el.style.top = newTop + "px";
 
-        // Patikrinti ar elementas virš šiukšliadėžės
+        // Patikrinti ar elementas kerta šiukšliadėžę
         const trashRect = trashZone.getBoundingClientRect();
         const elRect = el.getBoundingClientRect();
-        const centerX = (elRect.left + elRect.right) / 2;
-        const centerY = (elRect.bottom + elRect.top) / 2;
-
-        if (centerY > trashRect.top && centerY < trashRect.bottom) {
+        const crossesTrash =
+          elRect.bottom > trashRect.top && elRect.top < trashRect.bottom;
+        if (crossesTrash) {
           el.style.opacity = "0.4";
         } else {
           el.style.opacity = "1";
@@ -186,9 +191,11 @@
 
         const trashRect = trashZone.getBoundingClientRect();
         const elRect = el.getBoundingClientRect();
-        const centerY = (elRect.bottom + elRect.top) / 2;
+        // PATAISYMAS: tikriname ar bet kuri elemento dalis kerta šiukšliadėžę
+        const crossesTrash =
+          elRect.bottom > trashRect.top && elRect.top < trashRect.bottom;
 
-        if (centerY > trashRect.top && centerY < trashRect.bottom) {
+        if (crossesTrash) {
           el.remove();
           elements = elements.filter((e) => e.element !== el);
           updateCount();
