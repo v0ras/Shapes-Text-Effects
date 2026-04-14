@@ -1,171 +1,288 @@
-(function() {
-  // DOM elementai
-  const parametruSkydelis = document.getElementById('parametruSkydelis');
-  const atvaizdavimas = document.getElementById('atvaizdavimas');
-  const tvirtinti = document.getElementById('tvirtinti');
-  const plotisInput = document.getElementById('plotis');
-  const aukstisInput = document.getElementById('aukstis');
-  const fonasSpalvaInput = document.getElementById('fonasSpalva');
-  const remelisStorisInput = document.getElementById('remelisStoris');
-  const remelioSpalvaInput = document.getElementById('remelioSpalva');
-  const apvalinimasInput = document.getElementById('apvalinimas');
-  const tekstoLaukas = document.getElementById('tekstoLaukas');
-  const sriftoDydisInput = document.getElementById('sriftoDydis');
-  const tekstoSpalvaInput = document.getElementById('tekstoSpalva');
-  const fonoSpalvaInput = document.getElementById('fonoSpalva');
-  const containerBgDiv = document.getElementById('containerBg');
-  const istrintiZona = document.getElementById('istrintiZona');
-  const needHelpCheck = document.getElementById('needHelp');
-  const pagalbaDiv = document.getElementById('pagalba');
-  const elementuKiekisSpan = document.getElementById('elementuKiekis');
+(function () {
+  const canvas = document.getElementById("canvas");
+  const createBtn = document.getElementById("createBtn");
+  const clearAllBtn = document.getElementById("clearAllBtn");
+  const saveBtn = document.getElementById("saveBtn");
+  const loadBtn = document.getElementById("loadBtn");
+  const trashZone = document.getElementById("trashZone");
+  const elementCountSpan = document.getElementById("elementCount");
+  const modal = document.getElementById("modal");
+  const modalMessage = document.getElementById("modalMessage");
+  const modalConfirm = document.getElementById("modalConfirm");
+  const modalCancel = document.getElementById("modalCancel");
 
-  let elementuSkaicius = 0;
-  let aktyvusElementas = null;
-  let sukimasAktyvus = false;
+  const widthInput = document.getElementById("width");
+  const heightInput = document.getElementById("height");
+  const bgColorInput = document.getElementById("bgColor");
+  const borderWidthInput = document.getElementById("borderWidth");
+  const borderColorInput = document.getElementById("borderColor");
+  const borderRadiusInput = document.getElementById("borderRadius");
+  const textInput = document.getElementById("text");
+  const fontSizeInput = document.getElementById("fontSize");
+  const textColorInput = document.getElementById("textColor");
+  const fontFamilySelect = document.getElementById("fontFamily");
+  const canvasColorInput = document.getElementById("canvasColor");
 
-  // Pagalba – vilkimas pagalbos langui
-  $(pagalbaDiv).draggable ? $(pagalbaDiv).draggable() : null;
-  $(parametruSkydelis).draggable ? $(parametruSkydelis).draggable() : null;
+  const widthError = document.getElementById("widthError");
+  const heightError = document.getElementById("heightError");
 
-  // Pagalbos checkbox'as
-  needHelpCheck.addEventListener('change', (e) => {
-    pagalbaDiv.style.display = e.target.checked ? 'block' : 'none';
-  });
+  let elements = [];
+  let nextId = 1;
 
-  // .if – alert + facebook
-  document.querySelectorAll('.if').forEach(el => {
-    el.addEventListener('click', () => {
-      alert('✨ Daugiau kūrybos? Spausk OK ir atsivers langas');
-      window.open('https://www.facebook.com/v0ras', '_blank');
+  // Spalvų pasirinkimas
+  document.querySelectorAll(".color-label").forEach((label) => {
+    label.addEventListener("click", () => {
+      const type = label.dataset.color;
+      let input;
+      if (type === "bg") input = bgColorInput;
+      else if (type === "border") input = borderColorInput;
+      else if (type === "text") input = textColorInput;
+      else if (type === "canvas") input = canvasColorInput;
+      if (input) input.click();
     });
   });
 
-  // Fono keitimas (darbo zonos)
-  containerBgDiv.addEventListener('click', () => {
-    const spalva = fonoSpalvaInput.value;
-    atvaizdavimas.style.backgroundColor = spalva;
+  canvasColorInput.addEventListener("change", (e) => {
+    canvas.style.backgroundColor = e.target.value;
   });
 
-  // Funkcija sukurti elementą
-  function sukurtiElementa() {
-    const plotis = plotisInput.value ? parseInt(plotisInput.value) : 0;
-    const aukstis = aukstisInput.value ? parseInt(aukstisInput.value) : 0;
-    const remelis = remelisStorisInput.value ? parseInt(remelisStorisInput.value) : 0;
-    const remSpalva = remelioSpalvaInput.value;
-    const radius = apvalinimasInput.value ? parseInt(apvalinimasInput.value) : 0;
-    const fonoSpalva = fonasSpalvaInput.value;
-    const tekstas = tekstoLaukas.value.trim();
-    const fontSize = sriftoDydisInput.value ? parseInt(sriftoDydisInput.value) : 16;
-    const textSpalva = tekstoSpalvaInput.value;
+  window.addEventListener("load", () => {
+    widthInput.value = "0";
+    heightInput.value = "0";
+    borderWidthInput.value = "0";
+  });
 
-    if ((plotis === 0 || aukstis === 0) && tekstas === '') {
-      alert('❌ Įvesk plotį/aukštį (formai) arba parašyk tekstą!');
+  function showModal(message, onConfirm, onCancel) {
+    modalMessage.textContent = message;
+    modal.style.display = "flex";
+    const confirmHandler = () => {
+      modal.style.display = "none";
+      modalConfirm.removeEventListener("click", confirmHandler);
+      modalCancel.removeEventListener("click", cancelHandler);
+      if (onConfirm) onConfirm();
+    };
+    const cancelHandler = () => {
+      modal.style.display = "none";
+      modalConfirm.removeEventListener("click", confirmHandler);
+      modalCancel.removeEventListener("click", cancelHandler);
+      if (onCancel) onCancel();
+    };
+    modalConfirm.addEventListener("click", confirmHandler);
+    modalCancel.addEventListener("click", cancelHandler);
+  }
+
+  function createElement() {
+    const width = parseInt(widthInput.value) || 0;
+    const height = parseInt(heightInput.value) || 0;
+    const text = textInput.value.trim();
+
+    if ((width === 0 || height === 0) && text === "") {
+      widthError.textContent = "Reikia pločio/aukščio arba teksto";
+      heightError.textContent = "Reikia pločio/aukščio arba teksto";
       return;
     }
+    widthError.textContent = "";
+    heightError.textContent = "";
 
-    const elementas = document.createElement('div');
-    elementas.className = 'elementas';
-    elementas.style.position = 'relative';
-    if (plotis > 0) elementas.style.width = plotis + 'px';
-    if (aukstis > 0) elementas.style.height = aukstis + 'px';
-    elementas.style.backgroundColor = fonoSpalva;
-    elementas.style.border = `${remelis}px solid ${remSpalva}`;
-    elementas.style.borderRadius = radius + '%';
-    elementas.style.color = textSpalva;
-    elementas.style.fontSize = fontSize + 'px';
-    elementas.style.fontFamily = 'monospace';
-    elementas.style.padding = '12px';
-    elementas.style.fontWeight = 'bold';
-    elementas.innerText = tekstas !== '' ? tekstas : '🔷';
+    const id = nextId++;
+    const div = document.createElement("div");
+    div.className = "element";
+    div.setAttribute("data-id", id);
 
-    // Pridedam į atvaizdavimo zoną
-    atvaizdavimas.appendChild(elementas);
-    elementuSkaicius++;
-    elementuKiekisSpan.innerText = elementuSkaicius;
+    if (width > 0) div.style.width = width + "px";
+    if (height > 0) div.style.height = height + "px";
+    div.style.backgroundColor = bgColorInput.value;
+    div.style.border = `${borderWidthInput.value}px solid ${borderColorInput.value}`;
+    div.style.borderRadius = borderRadiusInput.value + "%";
+    div.style.color = textColorInput.value;
+    div.style.fontSize = fontSizeInput.value + "px";
+    div.style.fontFamily = fontFamilySelect.value;
+    div.style.left = "20px";
+    div.style.top = "20px";
+    div.innerText = text || "";
 
-    // Padarom vilkima (naudojam modernų drag and drop, bet patogiau per jQuery UI? Ne, padarysim su mygtuku?
-    // Kad nenaudot jQuery UI, bet naudosim paprastą drag? Na, tavo sename kode buvo .draggable()
-    // jQuery UI nėra mūsų naujam variante – bet galima implementuoti mygtuko vilkimą pele.
-    // Kadangi esi pripratęs prie drag, pridėsiu paprastą drag funkciją.
-    padarytiVilkima(elementas);
+    canvas.appendChild(div);
+    elements.push({ id, element: div });
+    updateCount();
+    makeDraggableAndRotatable(div);
+  }
 
-    // Sukimas (dvigubas click + ratukas)
-    let rotacija = 0;
-    elementas.addEventListener('dblclick', (e) => {
+  function makeDraggableAndRotatable(el) {
+    let rot = 0;
+    let isDragging = false;
+    let offsetX, offsetY;
+    let rotationActive = false;
+    let wheelHandler = null;
+
+    // Sukimas
+    el.addEventListener("dblclick", (e) => {
       e.stopPropagation();
-      aktyvusElementas = elementas;
-      sukimasAktyvus = true;
+      rotationActive = true;
+      if (wheelHandler) el.removeEventListener("wheel", wheelHandler);
+      wheelHandler = (wheelEvent) => {
+        if (!rotationActive) return;
+        wheelEvent.preventDefault();
+        rot += wheelEvent.deltaY > 0 ? -5 : 5;
+        el.style.transform = `rotate(${rot}deg)`;
+      };
+      el.addEventListener("wheel", wheelHandler);
+
+      const disableRotation = () => {
+        rotationActive = false;
+        document.removeEventListener("click", disableRotation);
+      };
+      document.addEventListener("click", disableRotation, { once: true });
     });
 
-    elementas.addEventListener('wheel', (e) => {
-      if (!sukimasAktyvus || aktyvusElementas !== elementas) return;
+    // Vilkimas
+    el.addEventListener("mousedown", (e) => {
+      if (e.button !== 0) return;
       e.preventDefault();
-      const delta = e.deltaY > 0 ? -5 : 5;
-      rotacija += delta;
-      elementas.style.transform = `rotate(${rotacija}deg)`;
-      elementas.style.transition = 'transform 0.05s linear';
-    });
+      isDragging = true;
 
-    // Paspaudus bet kur kitur – sukimas išsijungia
-    document.body.addEventListener('click', (e) => {
-      if (e.target !== elementas) sukimasAktyvus = false;
-    });
+      const rect = el.getBoundingClientRect();
+      const canvasRect = canvas.getBoundingClientRect();
+      offsetX = e.clientX - rect.left;
+      offsetY = e.clientY - rect.top;
 
-    // Animacija hover – švelnus sukimas (ne privaloma, bet smagu)
-    elementas.addEventListener('mouseenter', () => {
-      elementas.style.transition = 'transform 0.6s ease';
-    });
-  }
-
-  // Paprastas vilkimas (be papildomų bibliotekų)
-  function padarytiVilkima(el) {
-    let offsetX = 0, offsetY = 0, mouseX = 0, mouseY = 0;
-    el.addEventListener('mousedown', (e) => {
-      e.preventDefault();
-      offsetX = e.clientX - el.offsetLeft;
-      offsetY = e.clientY - el.offsetTop;
-      document.addEventListener('mousemove', onMouseMove);
-      document.addEventListener('mouseup', onMouseUp);
-    });
-
-    function onMouseMove(e) {
-      let left = e.clientX - offsetX;
-      let top = e.clientY - offsetY;
-      el.style.position = 'absolute';
-      el.style.left = left + 'px';
-      el.style.top = top + 'px';
       el.style.zIndex = 999;
+      el.style.cursor = "grabbing";
 
-      // Ištrinimo zona – patikrinti ar centras elementas patenka į šiukšliadėžę
-      const trashRect = istrintiZona.getBoundingClientRect();
-      const elRect = el.getBoundingClientRect();
-      const centerX = (elRect.left + elRect.right) / 2;
-      const centerY = (elRect.top + elRect.bottom) / 2;
-      if (centerX > trashRect.left && centerX < trashRect.right && centerY > trashRect.top && centerY < trashRect.bottom) {
-        el.style.opacity = '0.4';
-      } else {
-        el.style.opacity = '1';
-      }
-    }
+      const onMouseMove = (moveEvent) => {
+        if (!isDragging) return;
 
-    function onMouseUp(e) {
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
-      const trashRect = istrintiZona.getBoundingClientRect();
-      const elRect = el.getBoundingClientRect();
-      const centerX = (elRect.left + elRect.right) / 2;
-      const centerY = (elRect.top + elRect.bottom) / 2;
-      if (centerX > trashRect.left && centerX < trashRect.right && centerY > trashRect.top && centerY < trashRect.bottom) {
-        el.remove();
-        elementuSkaicius--;
-        elementuKiekisSpan.innerText = elementuSkaicius;
-      }
-      el.style.opacity = '1';
-      el.style.position = '';
-      el.style.left = '';
-      el.style.top = '';
-    }
+        let newLeft = moveEvent.clientX - offsetX - canvasRect.left;
+        let newTop = moveEvent.clientY - offsetY - canvasRect.top;
+
+        newLeft = Math.min(
+          Math.max(newLeft, 0),
+          canvas.clientWidth - el.offsetWidth,
+        );
+        newTop = Math.min(
+          Math.max(newTop, 0),
+          canvas.clientHeight - el.offsetHeight,
+        );
+
+        el.style.left = newLeft + "px";
+        el.style.top = newTop + "px";
+
+        // Patikrinti ar elementas virš šiukšliadėžės
+        const trashRect = trashZone.getBoundingClientRect();
+        const elRect = el.getBoundingClientRect();
+        const centerX = (elRect.left + elRect.right) / 2;
+        const centerY = (elRect.bottom + elRect.top) / 2;
+
+        if (centerY > trashRect.top && centerY < trashRect.bottom) {
+          el.style.opacity = "0.4";
+        } else {
+          el.style.opacity = "1";
+        }
+      };
+
+      const onMouseUp = () => {
+        isDragging = false;
+        document.removeEventListener("mousemove", onMouseMove);
+        document.removeEventListener("mouseup", onMouseUp);
+
+        const trashRect = trashZone.getBoundingClientRect();
+        const elRect = el.getBoundingClientRect();
+        const centerY = (elRect.bottom + elRect.top) / 2;
+
+        if (centerY > trashRect.top && centerY < trashRect.bottom) {
+          el.remove();
+          elements = elements.filter((e) => e.element !== el);
+          updateCount();
+        }
+        el.style.opacity = "1";
+        el.style.zIndex = "";
+        el.style.cursor = "grab";
+      };
+
+      document.addEventListener("mousemove", onMouseMove);
+      document.addEventListener("mouseup", onMouseUp);
+    });
   }
 
-  tvirtinti.addEventListener('click', sukurtiElementa);
+  function updateCount() {
+    elementCountSpan.textContent = elements.length;
+  }
+
+  function clearAll() {
+    if (elements.length === 0) return;
+    showModal(
+      "Ar tikrai išvalyti viską?",
+      () => {
+        elements.forEach((el) => el.element.remove());
+        elements = [];
+        updateCount();
+      },
+      () => {},
+    );
+  }
+
+  function saveToLocalStorage() {
+    const data = elements.map((el) => ({
+      id: el.id,
+      width: el.element.style.width,
+      height: el.element.style.height,
+      text: el.element.innerText,
+      left: el.element.style.left,
+      top: el.element.style.top,
+      bgColor: el.element.style.backgroundColor,
+      border: el.element.style.border,
+      borderRadius: el.element.style.borderRadius,
+      color: el.element.style.color,
+      fontSize: el.element.style.fontSize,
+      fontFamily: el.element.style.fontFamily,
+      transform: el.element.style.transform,
+    }));
+    localStorage.setItem("shapesData", JSON.stringify(data));
+    alert("Išsaugota!");
+  }
+
+  function loadFromLocalStorage() {
+    const saved = localStorage.getItem("shapesData");
+    if (!saved) {
+      alert("Nėra duomenų");
+      return;
+    }
+    showModal(
+      "Įkėlus, esami bus išvalyti. Tęsti?",
+      () => {
+        elements.forEach((el) => el.element.remove());
+        elements = [];
+        const data = JSON.parse(saved);
+        data.forEach((item) => {
+          const div = document.createElement("div");
+          div.className = "element";
+          div.style.cssText = `
+          width: ${item.width}; height: ${item.height};
+          background-color: ${item.bgColor}; border: ${item.border};
+          border-radius: ${item.borderRadius}; color: ${item.color};
+          font-size: ${item.fontSize}; font-family: ${item.fontFamily};
+          left: ${item.left}; top: ${item.top};
+          transform: ${item.transform};
+        `;
+          div.innerText = item.text;
+          canvas.appendChild(div);
+          elements.push({ id: item.id, element: div });
+          makeDraggableAndRotatable(div);
+        });
+        updateCount();
+      },
+      () => {},
+    );
+  }
+
+  createBtn.addEventListener("click", createElement);
+  clearAllBtn.addEventListener("click", clearAll);
+  saveBtn.addEventListener("click", saveToLocalStorage);
+  loadBtn.addEventListener("click", loadFromLocalStorage);
+
+  fontFamilySelect.addEventListener("change", () => {
+    document.querySelector(".font-preview").style.fontFamily =
+      fontFamilySelect.value;
+  });
+  document.querySelector(".font-preview").style.fontFamily =
+    fontFamilySelect.value;
 })();
